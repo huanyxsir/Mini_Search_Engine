@@ -23,5 +23,6 @@ std::vector<std::pair<docid_t, double>> QueryProcessor::TF_IDF(const std::string
 
     std::sort(allDocs.begin(), allDocs.end(), [&](const std::pair<docid_t, double> val1, const std::pair<docid_t, double> val2) -> bool {return val1.second > val2.second;});
     allDocs.resize(tot);
+    while(allDocs.size() && allDocs.back().second <= 1e-9) allDocs.pop_back();
     return allDocs;
 }

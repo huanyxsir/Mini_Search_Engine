@@ -26,7 +26,7 @@ int main(int argc, char** argv) {
         if(q == "#") break;
         std::vector<std::pair<docid_t, double>> res = qp.TF_IDF(q);
         std::cout << "The results are : \n";
-        for (auto [docid, val] : res) std::cout << indexer.get_filename(docid) << "\n";
+        for (auto [docid, score] : res) std::cout << "PATH : " << indexer.get_filename(docid) << "       Score : " << score << "\n";
     }
     return 0;
 }
