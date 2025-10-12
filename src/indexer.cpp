@@ -8,7 +8,7 @@ Indexer::Indexer(InvertedIndex &idx) : index_(idx) {}
 void Indexer::index_directory(const std::string &dir_path) {
     namespace fs = std::filesystem;
     docid_t id = 1;
-    for(auto &p : fs::directory_iterator(dir_path)) {
+    for(auto &p : fs::recursive_directory_iterator(dir_path)) {
         if(!p.is_regular_file()) continue;
         std::ifstream ifs(p.path());
         if(!ifs) continue;
