@@ -2,16 +2,19 @@
 #include "inverted_index.h"
 #include "tokenizer.h"
 #include <string>
+#include <vector>
 
 class Indexer {
-public:
-    Indexer(InvertedIndex &idx);
-    // index a directory of text files (each file -> one docID). Simple implementation:
-    void index_directory(const std::string &dir_path);
-    // index a single text (doc) with given docID
-    void index_document(docid_t docid, const std::string &text);
+    public:
+        Indexer(InvertedIndex &idx, Tokenizer &tokenizer);
+        ~Indexer() = default;
+        
+        void index_directory(const std::string &dir_path, const std::string &stopword_path);
+        void index_document(docid_t docid, const std::string &text);
+        std::string get_filename(docid_t docid);
 
-private:
-    InvertedIndex &index_;
-    Tokenizer tokenizer_;
+    private:
+        InvertedIndex &index;
+        Tokenizer &tokenizer;
+        std::vector<std::string> fileName;
 };

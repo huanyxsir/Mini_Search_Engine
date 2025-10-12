@@ -3,36 +3,30 @@
 #include "query_processor.h"
 #include <iostream>
 
+const std::string STOPWORD_PATH = "stop_wotds_english.txt";
+
 int main(int argc, char** argv) {
-    if(argc < 2) {
-        std::cout << "Usage: mini_search_engine <path_to_text_files_dir>\n";
-        return 1;
-    }
     std::string dir = argv[1];
     InvertedIndex idx;
-    Indexer indexer(idx);
+    Tokenizer tokenizer;
+    Indexer indexer(idx, tokenizer);
+
     std::cout << "Indexing files in: " << dir << " ...\n";
-    indexer.index_directory(dir);
+
+    indexer.index_directory(dir, STOPWORD_PATH);
+
     std::cout << "Indexing completed.\n";
 
-    QueryProcessor qp(idx);
+    QueryProcessor qp(idx, tokenizer);
+
     std::string q;
-    while(true) {
-        std::cout << "Enter query (or quit): ";
+    while(1) {
+        std::cout << "Enter query (or input # to quit): ";
         if(!std::getline(std::cin, q)) break;
-        if(q == "quit" || q == "exit") break;
-        // simple: treat as AND query if contains "AND", "OR" -> OR query; else AND
-        if(q.find(" OR ") != std::string::npos) {
-            auto res = qp.or_query(q);
-            std::cout << "OR result: ";
-            for(auto d: res) std::cout << d << " ";
-            std::cout << "\n";
-        } else {
-            auto res = qp.and_query(q);
-            std::cout << "AND result: ";
-            for(auto d: res) std::cout << d << " ";
-            std::cout << "\n";
-        }
+        if(q == "#") break;
+        std::vector<std::pair<docid_t, double>> res = qp.TF_IDF(q);
+        std::cout << "The results are : \n";
+        for (auto [docid, val] : res) std::cout << indexer.get_filename(docid) << "\n";
     }
     return 0;
 }

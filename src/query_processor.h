@@ -1,15 +1,16 @@
 #pragma once
-#include "inverted_index.h"
 #include <string>
 #include <vector>
+#include "inverted_index.h"
+#include "tokenizer.h"
 
 class QueryProcessor {
-public:
-    QueryProcessor(const InvertedIndex &idx);
-    // simple single-term or multi-term AND query (terms separated by space)
-    std::vector<docid_t> and_query(const std::string &query) const;
-    std::vector<docid_t> or_query(const std::string &query) const;
+    public:
+        QueryProcessor(InvertedIndex &idx, Tokenizer &tokenizer);
+        ~QueryProcessor() = default;
+        std::vector<std::pair<docid_t, double>> TF_IDF(const std::string &query, uint32_t tot = 10);
 
-private:
-    const InvertedIndex &index_;
+    private:
+        InvertedIndex &index;
+        Tokenizer &tokenizer;
 };

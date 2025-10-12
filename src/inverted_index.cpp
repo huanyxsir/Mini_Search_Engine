@@ -1,51 +1,38 @@
 #include "inverted_index.h"
+#include <cmath>
 #include <sstream>
 #include <fstream>
 #include <iostream>
 
-void InvertedIndex::add_term(const std::string &term, docid_t doc) {
-    dict_[term].add(doc);
-}
+void InvertedIndex::add_term(const std::string &term, docid_t doc, uint32_t pos) {
+    // std::cerr << term << " " << doc << " " << pos << "\n";
+    dict[term].add(doc, pos);
 
-const PostingList* InvertedIndex::get_postings(const std::string &term) const {
-    auto it = dict_.find(term);
-    if(it == dict_.end()) return nullptr;
-    return &it->second;
-}
+    if(doc >= termFreq.size()) termFreq.resize(doc + 1), sumTermFreq.resize(doc + 1);
 
-PostingList* InvertedIndex::get_postings_mut(const std::string &term) {
-    return &dict_[term];
+    // std::cerr << "finish resize\n";
+    if(!termFreq[doc].query(term)) docFreq.add(term, 1);
+    // std::cerr << "finish docFreq\n";
+    termFreq[doc].add(term, 1);
+    ++ sumTermFreq[doc];
 }
 
 void InvertedIndex::save_to_file(const std::string &path) const {
-    std::ofstream ofs(path);
-    if(!ofs) { std::cerr << "Failed to open " << path << "\n"; return; }
-    for(const auto &kv : dict_) {
-        ofs << kv.first;
-        for(auto &p : kv.second.entries()) {
-            ofs << " " << p.first << ":" << p.second;
-        }
-        ofs << "\n";
-    }
+    /* */
 }
 
 void InvertedIndex::load_from_file(const std::string &path) {
-    // minimal loader; left as exercise to robustly parse
-    dict_.clear();
-    std::ifstream ifs(path);
-    std::string line;
-    while(std::getline(ifs, line)) {
-        if(line.empty()) continue;
-        std::istringstream iss(line);
-        std::string term;
-        iss >> term;
-        std::string entry;
-        while(iss >> entry) {
-            auto colon = entry.find(':');
-            if(colon == std::string::npos) continue;
-            docid_t id = static_cast<docid_t>(std::stoul(entry.substr(0, colon)));
-            uint32_t freq = static_cast<uint32_t>(std::stoul(entry.substr(colon+1)));
-            for(uint32_t k=0;k<freq;k++) dict_[term].add(id); // rebuild by repeated adds
-        }
-    }
+    /* */
 }
+
+std::vector<double> InvertedIndex::get_TF(const std::string &term) {
+    std::vector<double> tfList;
+    for (int i = 0; i < termFreq.size(); ++ i) tfList.push_back(1.0 * termFreq[i].query(term) / sumTermFreq[i]);
+    return tfList;
+}
+
+double InvertedIndex::get_IDF(const std::string &term) {
+    return log(1.0 * termFreq.size() / (docFreq.query(term) + 1));
+}
+
+uint32_t InvertedIndex::get_docnum() {return termFreq.size();}
