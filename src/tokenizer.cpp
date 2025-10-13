@@ -21,15 +21,16 @@ std::vector<std::string> Tokenizer::tokenize(const std::string &text) {
     while(iss >> token) {
         std::string _token = stem(trim(token));
         if(_token.empty()) continue;
-        if(stopwords.query(_token)) continue;
+        if(stopwords.find(_token) != stopwords.end()) continue;
         out.push_back(_token);
     }
     return out;
 }
 
 void Tokenizer::load_stopwords(const std::string &path) {
-    std::ifstream ifs(path);
-    if(!ifs) return;
+    std::ifstream isf(path);
+    if(!isf) return;
+    // std::cerr << "load\n";
     std::string w;
-    while(ifs >> w) stopwords.add(stem(trim(w)), 1);
+    while(isf >> w) stopwords.insert(stem(trim(w)));
 }

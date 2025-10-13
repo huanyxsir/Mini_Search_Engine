@@ -2,7 +2,6 @@
 #include <string>
 #include <vector>
 #include <unordered_set>
-#include "trie.h"
 
 class Tokenizer {
     public:
@@ -13,7 +12,7 @@ class Tokenizer {
         void load_stopwords(const std::string &path);
 
     private:
-        Trie stopwords;
+        std::unordered_set<std::string> stopwords;
         std::string trim(const std::string &w) const;
         std::string stem(const std::string &w) const;
 };

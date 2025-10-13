@@ -1,15 +1,15 @@
 #include "inverted_index.h"
-#include "indexer.h"
+#include "index_generator.h"
 #include "query_processor.h"
 #include <iostream>
 
-const std::string STOPWORD_PATH = "../src/stop_wotds_english.txt";
+const std::string STOPWORD_PATH = "../src/stop_words_english.txt";
 
 int main(int argc, char** argv) {
     std::string dir = argv[1];
     InvertedIndex idx;
     Tokenizer tokenizer;
-    Indexer indexer(idx, tokenizer);
+    IndexGenerator indexer(idx, tokenizer);
 
     std::cout << "Indexing files in: " << dir << " ...\n";
 
@@ -26,7 +26,7 @@ int main(int argc, char** argv) {
         if(q == "#") break;
         std::vector<std::pair<docid_t, double>> res = qp.TF_IDF(q);
         std::cout << "The results are : \n";
-        for (auto [docid, score] : res) std::cout << "PATH : " << indexer.get_filename(docid) << "       Score : " << score << "\n";
+        for (auto [docid, score] : res) std::cout << "PATH : " << indexer.get_filename(docid) << "\n";
     }
     return 0;
 }

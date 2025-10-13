@@ -10,7 +10,7 @@ std::vector<std::pair<docid_t, double>> QueryProcessor::TF_IDF(const std::string
     std::vector<std::string> terms = tokenizer.tokenize(query);
     if (terms.empty()) return {};
 
-    std::vector<std::pair<docid_t, double>> allDocs(index.get_docnum());
+    std::vector<std::pair<docid_t, double>> allDocs(index.get_docNum());
 
     for (int i = 0; i < allDocs.size(); ++ i) allDocs[i].first = i;
 

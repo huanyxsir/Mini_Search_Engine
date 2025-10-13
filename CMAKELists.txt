@@ -7,10 +7,9 @@ add_executable(mini_search_engine
     src/tokenizer.cpp
     src/posting_list.cpp
     src/inverted_index.cpp
-    src/indexer.cpp
+    src/index_generator.cpp
     src/query_processor.cpp
     src/porter2_stemmer.cpp
-    src/trie.cpp
 )
 
 target_include_directories(mini_search_engine PRIVATE src)

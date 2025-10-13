@@ -9,8 +9,8 @@ class PostingList {
         PostingList() = default;
         ~PostingList() = default;
         
-        void add(docid_t doc, uint32_t pos);
-        std::vector<std::pair<docid_t, uint32_t>>& entries();
+        void add(docid_t docid, uint32_t tot);
+        std::vector<std::pair<docid_t, uint32_t>>& get_data();
         void merge(PostingList &other);
 
     private:

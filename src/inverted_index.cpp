@@ -4,17 +4,28 @@
 #include <fstream>
 #include <iostream>
 
-void InvertedIndex::add_term(const std::string &term, docid_t doc, uint32_t pos) {
-    // std::cerr << term << " " << doc << " " << pos << "\n";
-    dict[term].add(doc, pos);
+void InvertedIndex::add_term(const std::string &term, docid_t docid, uint32_t tot) {
+    // std::cerr << term << " " << docid << " " << tot << "\n";
+    dict[term].add(docid, tot);
+    if(docid >= docNum) docNum = docid + 1, sumTermFreq.reserve(docNum);
+    ++ docFreq[term];
+    sumTermFreq[docid] += tot;
+}
 
-    if(doc >= termFreq.size()) termFreq.resize(doc + 1), sumTermFreq.resize(doc + 1);
+void InvertedIndex::merge(InvertedIndex &other) {
+    std::unordered_map<std::string, PostingList> &other_dict = other.get_dict();
+    std::unordered_map<std::string, uint32_t> &other_docFreq = other.get_docFreq();
+    std::vector<uint32_t> &other_sumTermFreq = other.get_sumTermFreq();
+    docid_t other_docNum = other.get_docNum();
 
-    // std::cerr << "finish resize\n";
-    if(!termFreq[doc].query(term)) docFreq.add(term, 1);
-    // std::cerr << "finish docFreq\n";
-    termFreq[doc].add(term, 1);
-    ++ sumTermFreq[doc];
+    // std::cerr << "start merge\n";
+    for (auto [key, val] : other_dict) dict[key].merge(val);
+    // std::cerr << "finish dict merge\n";
+    for (auto [key, val] : other_docFreq) docFreq[key] += val;
+    if(other_docNum > docNum) docNum = other_docNum, sumTermFreq.reserve(docNum);
+    for (docid_t docid = 0; docid < other_docNum; ++ docid) sumTermFreq[docid] += other_sumTermFreq[docid];
+
+    // std::cerr << docNum << "\n";
 }
 
 void InvertedIndex::save_to_file(const std::string &path) const {
@@ -26,13 +37,20 @@ void InvertedIndex::load_from_file(const std::string &path) {
 }
 
 std::vector<double> InvertedIndex::get_TF(const std::string &term) {
-    std::vector<double> tfList;
-    for (int i = 0; i < termFreq.size(); ++ i) tfList.push_back(1.0 * termFreq[i].query(term) / sumTermFreq[i]);
-    return tfList;
+    std::vector<std::pair<docid_t, uint32_t>> &postinglist = dict[term].get_data();
+    std::vector<double> res(docNum);
+
+    for (auto [docid, tf] : postinglist) res[docid] = 1.0 * tf / sumTermFreq[docid];
+
+    return res;
 }
 
-double InvertedIndex::get_IDF(const std::string &term) {
-    return log(1.0 * termFreq.size() / (docFreq.query(term) + 1));
-}
+double InvertedIndex::get_IDF(const std::string &term) { return log(1.0 * docNum / (docFreq[term] + 1));}
 
-uint32_t InvertedIndex::get_docnum() {return termFreq.size();}
+docid_t InvertedIndex::get_docNum() {return docNum;}
+
+std::unordered_map<std::string, PostingList> &InvertedIndex::get_dict() {return dict;}
+
+std::unordered_map<std::string, uint32_t> &InvertedIndex::get_docFreq() {return docFreq;}
+
+std::vector<uint32_t> &InvertedIndex::get_sumTermFreq() {return sumTermFreq;}
