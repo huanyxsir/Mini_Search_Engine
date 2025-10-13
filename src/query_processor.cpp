@@ -3,6 +3,7 @@
 #include <algorithm>
 #include <cstdint>
 #include <vector>
+#include <iostream>
 
 QueryProcessor::QueryProcessor(InvertedIndex &index, Tokenizer &tokenizer) : index(index), tokenizer(tokenizer) {}
 
@@ -17,6 +18,7 @@ std::vector<std::pair<docid_t, double>> QueryProcessor::TF_IDF(const std::string
     for (auto term : terms) {
         // std::cerr << term << "\n";
         std::vector<double> tf = index.get_TF(term);
+        // std::cerr << term << "\n";
         double idf = index.get_IDF(term);
         for (int i = 0; i < allDocs.size(); ++ i) allDocs[i].second += tf[i] * idf;
     }

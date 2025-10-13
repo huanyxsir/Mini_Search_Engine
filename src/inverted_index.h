@@ -11,8 +11,8 @@ class InvertedIndex {
         
         void add_term(const std::string &term, docid_t docid, uint32_t tot);
 
-        void save_to_file(const std::string &path) const;
-        void load_from_file(const std::string &path);
+        void save(const std::string &path);
+        void load(const std::string &path);
 
         void merge(InvertedIndex &other);
         std::vector<double> get_TF(const std::string &trem);

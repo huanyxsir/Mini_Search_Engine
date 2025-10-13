@@ -10,6 +10,7 @@ add_executable(mini_search_engine
     src/index_generator.cpp
     src/query_processor.cpp
     src/porter2_stemmer.cpp
+    src/IObit.cpp
 )
 
 target_include_directories(mini_search_engine PRIVATE src)
