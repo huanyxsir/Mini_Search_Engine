@@ -1,5 +1,3 @@
-fuck ads
-
 build :
 
 ```
