@@ -8,7 +8,7 @@
 class Trie {
     public:
         Trie() = default;
-        ~Trie() = default;
+        ~Trie();
         
         void add(const std::string &word, uint32_t val);
         uint32_t query(const std::string &word);
@@ -21,4 +21,5 @@ class Trie {
         };
 
         Node* root = new Node;
+        void free_dfs(Node* node);
 };

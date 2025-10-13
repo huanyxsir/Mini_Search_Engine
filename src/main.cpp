@@ -3,7 +3,7 @@
 #include "query_processor.h"
 #include <iostream>
 
-const std::string STOPWORD_PATH = "stop_wotds_english.txt";
+const std::string STOPWORD_PATH = "../src/stop_wotds_english.txt";
 
 int main(int argc, char** argv) {
     std::string dir = argv[1];

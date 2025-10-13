@@ -1,4 +1,4 @@
-ddl is coming LOL
+fuck ads
 
 build :
 
