@@ -11,4 +11,6 @@ namespace IOBit {
     std::string read_string(std::istream& is);
     void write_byte_aligned(std::ostream &os, uint32_t value);
     uint32_t read_byte_aligned(std::istream &is);
+    void write_elias(std::ostream &os, uint32_t value, uint32_t b);
+    uint32_t read_elias(std::istream &is, uint32_t b);
 }

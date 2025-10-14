@@ -1,5 +1,5 @@
 #include "index_generator.h"
-#include "IOBit.h"
+#include "IObit.h"
 #include <filesystem>
 #include <fstream>
 #include <iostream>

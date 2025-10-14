@@ -32,6 +32,39 @@ std::string IOBit::read_string(std::istream& is) {
     return result;
 }
 
+void IOBit::write_elias(std::ostream &os, uint32_t value, uint32_t b) {
+    if (value == 0) {
+        write_byte_aligned(os, 0);
+        return;
+    }
+    
+    uint32_t n = 0;
+    uint32_t temp = value;
+    while ((1 << (n)) * b < temp) ++ n;
+
+    uint32_t new_val = (1 << n) - 1;
+    new_val <<= 1;
+    
+    for (int i = n - 2; i >= 0; -- i) os.put((value >> i) & 1);
+}
+
+uint32_t IOBit::read_elias(std::istream &is, uint32_t b) {
+    uint32_t n = 0;
+    char bit;
+    
+    while (is.get(bit) && bit == 1) ++ n;
+    
+    if (!is) return 0;
+    
+    uint32_t value = b;
+    for (int i = 0; i < n; ++i) {
+        if (!is.get(bit)) return 0;
+        value = (value << 1) | (bit & 1);
+    }
+    
+    return value;
+}
+
 void IOBit::write_byte_aligned(std::ostream &os, uint32_t value) {
     if (value < (1 << 6)) {
         // 00xxxxxx
