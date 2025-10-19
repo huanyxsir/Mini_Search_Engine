@@ -18,8 +18,6 @@ void command(std::string q, InvertedIndex &idx, IndexGenerator &index_generator)
         index_generator.load(SAVE_INDEX_GENERATOR_PATH);
     } else if(q == "/update") {
         index_generator.index_directory(DATA_PATH);
-        // std::cerr << idx.get_docNum() << "\n";
-        // std::cerr << idx.get_sumTermFreq().size() << "\n";
     } else {
         std::cerr << "Unknown command\n";
     }

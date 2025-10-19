@@ -6,7 +6,6 @@
 #include "IObit.h"
 
 void InvertedIndex::add_term(const std::string &term, docid_t docid, uint32_t tot) {
-    // std::cerr << term << " " << docid << " " << tot << "\n";
     dict[term].add(docid, tot);
     if(docid >= docNum) docNum = docid + 1, sumTermFreq.resize(docNum);
     ++ docFreq[term];
@@ -19,14 +18,11 @@ void InvertedIndex::merge(InvertedIndex &other) {
     std::vector<uint32_t> &other_sumTermFreq = other.get_sumTermFreq();
     docid_t other_docNum = other.get_docNum();
 
-    // std::cerr << "start merge\n";
     for (auto [key, val] : other_dict) dict[key].merge(val);
-    // std::cerr << "finish dict merge\n";
     for (auto [key, val] : other_docFreq) docFreq[key] += val;
     if(other_docNum > docNum) docNum = other_docNum, sumTermFreq.resize(docNum);
     for (docid_t docid = 0; docid < other_docNum; ++ docid) sumTermFreq[docid] += other_sumTermFreq[docid];
 
-    // std::cerr << sumTermFreq.size() << "\n";
 }
 
 void InvertedIndex::save(const std::string &path) {

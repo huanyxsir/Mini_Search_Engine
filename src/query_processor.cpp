@@ -7,20 +7,24 @@
 
 QueryProcessor::QueryProcessor(InvertedIndex &index, Tokenizer &tokenizer) : index(index), tokenizer(tokenizer) {}
 
-std::vector<std::pair<docid_t, double>> QueryProcessor::TF_IDF(const std::string &query, uint32_t tot) {
+std::vector<std::pair<docid_t, double>> QueryProcessor::TF_IDF(const std::string &query, uint32_t tot, double k1, double b) {
     std::vector<std::string> terms = tokenizer.tokenize(query);
     if (terms.empty()) return {};
 
     std::vector<std::pair<docid_t, double>> allDocs(index.get_docNum());
+    std::vector<uint32_t> sumTermFreq = index.get_sumTermFreq();
 
-    for (int i = 0; i < allDocs.size(); ++ i) allDocs[i].first = i;
+    for (uint32_t i = 0; i < allDocs.size(); ++ i) allDocs[i].first = i;
+
+    uint32_t sumTerm = 0;
+    for (auto val : sumTermFreq) sumTerm += val;
+
+    double avgSumTerm = 1.0 * sumTerm / sumTermFreq.size();
 
     for (auto term : terms) {
-        // std::cerr << term << "\n";
         std::vector<double> tf = index.get_TF(term);
-        // std::cerr << term << "\n";
         double idf = index.get_IDF(term);
-        for (int i = 0; i < allDocs.size(); ++ i) allDocs[i].second += tf[i] * idf;
+        for (int i = 0; i < allDocs.size(); ++ i) allDocs[i].second += idf * tf[i] * (k1 + 1) / (tf[i] + k1 * (1 - b + b * sumTermFreq[i] / avgSumTerm));
     }
 
     std::sort(allDocs.begin(), allDocs.end(), [&](const std::pair<docid_t, double> val1, const std::pair<docid_t, double> val2) -> bool {return val1.second > val2.second;});

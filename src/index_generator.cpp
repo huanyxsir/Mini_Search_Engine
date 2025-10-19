@@ -17,7 +17,6 @@ void IndexGenerator::index_directory(const std::string &dir_path) {
         auto it = std::find(fileName.begin(), fileName.end(), p.path().string());
         if (it != fileName.end()) continue;
         std::string content((std::istreambuf_iterator<char>(ifs)), std::istreambuf_iterator<char>());
-        // std::cerr << docNum << "\n";
         index_document(docNum, content);
         fileName.push_back(p.path().string());
         ++ docNum;
@@ -30,9 +29,7 @@ void IndexGenerator::index_document(docid_t docid, const std::string &text) {
     
     std::unordered_map<std::string, uint32_t> tot;
     for(auto t : tokens) ++ tot[t];
-    // std::cerr << "finish tokens\n";
     for (auto [key, val] : tot) new_index.add_term(key, docid, val);
-    // std::cerr << "finish new_index\n";
     index.merge(new_index);
 }
 
